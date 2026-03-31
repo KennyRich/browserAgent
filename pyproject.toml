@@ -1,0 +1,24 @@
+[project]
+name = "browser-agent"
+version = "0.1.0"
+description = "General-purpose autonomous browser agent powered by Pydantic AI and Ollama"
+readme = "README.md"
+authors = [
+    { name = "Kehinde Richard Ogunyale", email = "kogunyale01@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic-ai[openai]",
+    "pydantic-settings",
+    "playwright",
+    "playwright-stealth",
+    "markdownify",
+    "rich",
+]
+
+[project.scripts]
+browser-agent = "browser_agent.main:main"
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
