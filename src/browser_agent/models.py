@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
+    import asyncio
+
     from browser_agent.browser.session import BrowserSession
     from browser_agent.config import Settings
     from browser_agent.display import Display
@@ -18,6 +20,7 @@ class AgentDeps:
     memory: MemoryStore
     display: Display
     settings: Settings
+    input_queue: asyncio.Queue[str] | None = None
 
 
 class BrowserCloseRequested(Exception):

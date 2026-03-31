@@ -1,3 +1,5 @@
+import asyncio
+
 from pydantic_ai import RunContext
 
 from browser_agent.models import AgentDeps
@@ -7,7 +9,7 @@ FORM_FIELD_DISCOVERY_JS = """
     const fields = [];
     document.querySelectorAll('input, select, textarea').forEach(el => {
         if (el.offsetParent === null) return;
-        if (el.type === 'hidden' || el.type === 'submit' || el.type === 'button') return;
+        if (el.type === 'hidden' || el.type === 'submit' || el.type === 'button' || el.type === 'checkbox') return;
         const label = (
             el.labels?.[0]?.innerText?.trim() ||
             el.getAttribute('aria-label') ||
@@ -29,6 +31,15 @@ FORM_FIELD_DISCOVERY_JS = """
 """
 
 
+async def _wait_for_input(ctx: RunContext[AgentDeps]) -> str:
+    if ctx.deps.input_queue is None:
+        return ""
+    result = await ctx.deps.input_queue.get()
+    if result == "__INTERRUPT__":
+        raise asyncio.CancelledError("User interrupted")
+    return result
+
+
 async def ask_human(
     ctx: RunContext[AgentDeps],
     question: str,
@@ -38,12 +49,24 @@ async def ask_human(
 
     Args:
         question: The question to ask the user.
-        options: Optional list of choices for the user to pick from. If provided, shows interactive selection with arrow keys. User can also type a custom answer.
+        options: Optional list of choices for the user to pick from.
     """
     display = ctx.deps.display
+
     if options:
-        return display.prompt_human_choice(question, options)
-    return display.prompt_human(question)
+        display.prompt_human_choice(question, options)
+        answer = await display.show_choices(options)
+        display.show_user_guidance(f"Selected: {answer}")
+        display.reset_input_mode()
+        display.set_status_text("Working...", "cyan")
+        return answer
+
+    display.prompt_human(question)
+    answer = await _wait_for_input(ctx)
+    display.show_user_guidance(f"User answered: {answer}")
+    display.reset_input_mode()
+    display.set_status_text("Working...", "cyan")
+    return answer
 
 
 async def fill_form_with_human(ctx: RunContext[AgentDeps]) -> str:
@@ -66,7 +89,14 @@ async def fill_form_with_human(ctx: RunContext[AgentDeps]) -> str:
         label = field["label"]
         field_type = field["type"]
 
-        value = display.prompt_form_field(i, len(fields), label, field_type)
+        display.prompt_form_field(i, len(fields), label, field_type)
+        value = await _wait_for_input(ctx)
+
+        if field_type == "password":
+            display.show_user_guidance("********")
+        else:
+            display.show_user_guidance(value)
+
         if not value:
             continue
 
@@ -88,15 +118,17 @@ async def fill_form_with_human(ctx: RunContext[AgentDeps]) -> str:
                 )
                 await locator.first.fill(value, timeout=5000)
 
-            safe_label = label.replace("password", "Password").replace("Password", "Password")
-            filled_labels.append(safe_label)
+            filled_labels.append(label)
         except Exception as e:
-            filled_labels.append(f"{label} (failed: {e})")
+            if field_type == "password":
+                filled_labels.append(f"{label} (failed to fill)")
+            else:
+                filled_labels.append(f"{label} (failed: {e})")
 
     display.show_form_complete(filled_labels)
 
     summary_parts = []
-    for i, field in enumerate(fields):
+    for field in fields:
         label = field["label"]
         if field["type"] == "password":
             summary_parts.append(f"{label}: ********")
@@ -115,7 +147,12 @@ async def wait_for_human(ctx: RunContext[AgentDeps], instruction: str) -> str:
     if ctx.deps.settings.headless:
         return "Cannot wait for human action in headless mode. The browser window is not visible."
 
-    ctx.deps.display.prompt_wait(instruction)
+    display = ctx.deps.display
+    display.prompt_wait(instruction)
+    await _wait_for_input(ctx)
+
+    display.reset_input_mode()
+    display.set_status_text("Working...", "cyan")
 
     state = await ctx.deps.browser.get_state()
     return f"Human completed action. Page is now at: {state.url} - {state.title}"

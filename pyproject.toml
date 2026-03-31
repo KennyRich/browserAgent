@@ -16,6 +16,7 @@ dependencies = [
     "rich",
     "aiosqlite",
     "InquirerPy",
+    "textual",
 ]
 
 [project.scripts]
