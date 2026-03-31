@@ -11,5 +11,7 @@ class Settings(BaseSettings):
     max_retries: int = 3
     max_concurrent: int = 3
     max_text_length: int = 4000
+    max_memory_length: int = 8000
+    memory_db_path: str = "memory.db"
     viewport_width: int = 1280
     viewport_height: int = 720

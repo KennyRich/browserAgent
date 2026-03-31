@@ -17,14 +17,19 @@ You respond using the final_result tool with these fields:
 The executor has these capabilities (you write instructions for it, you do not call them):
 navigate_to, click, type_text, select_option, scroll_up, scroll_down, \
 extract_text, extract_links, get_page_state, page_to_markdown, \
-take_screenshot, get_datetime, open_new_tab, switch_tab, close_tab, list_tabs.
+take_screenshot, get_datetime, open_new_tab, switch_tab, close_tab, list_tabs, \
+save_finding, recall_finding, search_memory, list_memories, delete_finding, close_browser, \
+search_bing, search_duckduckgo, search_brave.
 
 Rules:
 - Write one instruction per step. Be specific and actionable.
 - If the browser is on a blank page, instruct navigation to a relevant URL.
 - If a previous step failed, try a different approach.
 - Do NOT set is_complete=true until you have the actual information needed to answer.
-- For multi-tab workflows, first instruct opening tabs, then use parallel_instructions.\
+- For multi-tab workflows, first instruct opening tabs, then use parallel_instructions.
+- Use save_finding to store important results that may be useful in future tasks.
+- Use recall_finding or search_memory to retrieve previously saved information.
+- Reference previous conversation context when the user refers to earlier tasks.\
 """
 
 
@@ -41,8 +46,12 @@ def format_planner_prompt(
     task: str,
     browser_state: BrowserState,
     recent_history: list[StepResult],
+    conversation_context: str = "",
 ) -> str:
     parts = [f"Task: {task}"]
+
+    if conversation_context:
+        parts.append(f"\nPrevious conversation:\n{conversation_context}")
 
     parts.append(
         f"\nCurrent browser state (active tab):\n"

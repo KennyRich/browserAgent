@@ -1,4 +1,23 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from browser_agent.browser.session import BrowserSession
+    from browser_agent.memory import MemoryStore
+
+
+@dataclass
+class AgentDeps:
+    browser: BrowserSession
+    memory: MemoryStore
+
+
+class BrowserCloseRequested(Exception):
+    pass
 
 
 class BrowserState(BaseModel):

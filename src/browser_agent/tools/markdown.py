@@ -1,7 +1,7 @@
 from markdownify import markdownify
 from pydantic_ai import RunContext
 
-from browser_agent.browser.session import BrowserSession
+from browser_agent.models import AgentDeps
 
 STRIP_TAGS = [
     "nav", "script", "style", "footer", "aside",
@@ -9,13 +9,13 @@ STRIP_TAGS = [
 ]
 
 
-async def page_to_markdown(ctx: RunContext[BrowserSession]) -> str:
+async def page_to_markdown(ctx: RunContext[AgentDeps]) -> str:
     """Convert the current page content to clean, readable markdown.
 
     Strips navigation, scripts, ads, and other non-content elements.
     Useful for research tasks where you need to read and understand page content.
     """
-    page = ctx.deps.page
+    page = ctx.deps.browser.page
     try:
         html = await page.content()
         md = markdownify(html, strip=STRIP_TAGS).strip()

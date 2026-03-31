@@ -1,18 +1,17 @@
 from pydantic_ai import RunContext
 
-from browser_agent.browser.session import BrowserSession
-from browser_agent.models import BrowserState
+from browser_agent.models import AgentDeps
 
 
 async def extract_text(
-    ctx: RunContext[BrowserSession], selector_description: str | None = None
+    ctx: RunContext[AgentDeps], selector_description: str | None = None
 ) -> str:
     """Extract text content from the page or a specific element.
 
     Args:
         selector_description: Optional visible text or label to target a specific element. If None, extracts the full page text.
     """
-    page = ctx.deps.page
+    page = ctx.deps.browser.page
     try:
         if selector_description:
             locator = page.get_by_text(selector_description, exact=False)
@@ -24,9 +23,9 @@ async def extract_text(
         return f"Failed to extract text: {e}"
 
 
-async def extract_links(ctx: RunContext[BrowserSession]) -> str:
+async def extract_links(ctx: RunContext[AgentDeps]) -> str:
     """Extract all links from the current page with their text and URLs."""
-    page = ctx.deps.page
+    page = ctx.deps.browser.page
     try:
         links = await page.evaluate("""
             () => Array.from(document.querySelectorAll('a[href]'))
@@ -39,9 +38,9 @@ async def extract_links(ctx: RunContext[BrowserSession]) -> str:
         return f"Failed to extract links: {e}"
 
 
-async def get_page_state(ctx: RunContext[BrowserSession]) -> str:
+async def get_page_state(ctx: RunContext[AgentDeps]) -> str:
     """Get the current browser page state including URL, title, visible text, and interactive elements."""
-    state = await ctx.deps.get_state()
+    state = await ctx.deps.browser.get_state()
     return (
         f"URL: {state.url}\n"
         f"Title: {state.title}\n"
