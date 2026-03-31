@@ -259,6 +259,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },
+    { name = "inquirerpy" },
     { name = "markdownify" },
     { name = "playwright" },
     { name = "playwright-stealth" },
@@ -270,6 +271,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aiosqlite" },
+    { name = "inquirerpy" },
     { name = "markdownify" },
     { name = "playwright" },
     { name = "playwright-stealth" },
@@ -1026,6 +1028,19 @@ wheels = [
 ]
 
 [[package]]
+name = "inquirerpy"
+version = "0.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pfzy" },
+    { name = "prompt-toolkit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/64/73/7570847b9da026e07053da3bbe2ac7ea6cde6bb2cbd3c7a5a950fa0ae40b/InquirerPy-0.3.4.tar.gz", hash = "sha256:89d2ada0111f337483cb41ae31073108b2ec1e618a49d7110b0d7ade89fc197e", size = 44431, upload-time = "2022-06-27T23:11:20.598Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ce/ff/3b59672c47c6284e8005b42e84ceba13864aa0f39f067c973d1af02f5d91/InquirerPy-0.3.4-py3-none-any.whl", hash = "sha256:c65fdfbac1fa00e3ee4fb10679f4d3ed7a012abf4833910e63c295827fe2a7d4", size = 67677, upload-time = "2022-06-27T23:11:17.723Z" },
+]
+
+[[package]]
 name = "jaraco-classes"
 version = "3.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1584,6 +1599,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/72/55/b748445cb4ea6b125626f15379be7c96d1035d4fa3e8fee362fa92298abf/pathable-0.5.0.tar.gz", hash = "sha256:d81938348a1cacb525e7c75166270644782c0fb9c8cecc16be033e71427e0ef1", size = 16655, upload-time = "2026-02-20T08:47:00.748Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/52/96/5a770e5c461462575474468e5af931cff9de036e7c2b4fea23c1c58d2cbe/pathable-0.5.0-py3-none-any.whl", hash = "sha256:646e3d09491a6351a0c82632a09c02cdf70a252e73196b36d8a15ba0a114f0a6", size = 16867, upload-time = "2026-02-20T08:46:59.536Z" },
+]
+
+[[package]]
+name = "pfzy"
+version = "0.3.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d9/5a/32b50c077c86bfccc7bed4881c5a2b823518f5450a30e639db5d3711952e/pfzy-0.3.4.tar.gz", hash = "sha256:717ea765dd10b63618e7298b2d98efd819e0b30cd5905c9707223dceeb94b3f1", size = 8396, upload-time = "2022-01-28T02:26:17.946Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8c/d7/8ff98376b1acc4503253b685ea09981697385ce344d4e3935c2af49e044d/pfzy-0.3.4-py3-none-any.whl", hash = "sha256:5f50d5b2b3207fa72e7ec0ef08372ef652685470974a107d0d4999fc5a903a96", size = 8537, upload-time = "2022-01-28T02:26:16.047Z" },
 ]
 
 [[package]]

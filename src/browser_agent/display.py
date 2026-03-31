@@ -1,3 +1,4 @@
+from InquirerPy import inquirer
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -120,3 +121,63 @@ class Display:
         self.show_step_header_parallel(step_num, max_steps)
         self.console.print(f"  Thinking: {reasoning}", style="step.reasoning")
         self.show_parallel_instructions(instructions)
+
+    def prompt_human(self, question: str) -> str:
+        self.console.print()
+        self.console.print(
+            Panel(question, title="Agent needs your input", border_style="yellow", padding=(0, 2))
+        )
+        return self.console.input("[bold yellow]> [/]").strip()
+
+    def prompt_human_choice(self, question: str, options: list[str]) -> str:
+        self.console.print()
+        self.console.print(
+            Panel(question, title="Agent needs your input", border_style="yellow", padding=(0, 2))
+        )
+        choices = options + ["Type my own answer..."]
+        result = inquirer.select(
+            message="",
+            choices=choices,
+            pointer=">"
+        ).execute()
+        if result == "Type my own answer...":
+            return self.console.input("[bold yellow]> [/]").strip()
+        return result
+
+    def show_form_header(self, total_fields: int) -> None:
+        self.console.print()
+        self.console.print(
+            Panel(
+                f"The agent needs you to fill {total_fields} field{'s' if total_fields != 1 else ''}",
+                title="Form Input",
+                border_style="yellow",
+                padding=(0, 2),
+            )
+        )
+
+    def prompt_form_field(self, index: int, total: int, label: str, field_type: str) -> str:
+        subtitle = f"Type: {field_type}" if field_type not in ("text", "") else ""
+        content = Text()
+        content.append(label, style="bold")
+        if subtitle:
+            content.append(f"\n{subtitle}", style="dim")
+        self.console.print(
+            Panel(content, title=f"({index}/{total})", border_style="yellow", padding=(0, 2))
+        )
+        is_password = field_type == "password"
+        if is_password:
+            return self.console.input("[bold yellow]> [/]", password=True).strip()
+        return self.console.input("[bold yellow]> [/]").strip()
+
+    def show_form_complete(self, fields: list[str]) -> None:
+        self.console.print(
+            f"  Filled {len(fields)} fields: {', '.join(fields)}", style="dim green"
+        )
+        self.console.print()
+
+    def prompt_wait(self, instruction: str) -> None:
+        self.console.print()
+        self.console.print(
+            Panel(instruction, title="Action needed in browser", border_style="yellow", padding=(0, 2))
+        )
+        self.console.input("[dim]Press Enter when done...[/]")

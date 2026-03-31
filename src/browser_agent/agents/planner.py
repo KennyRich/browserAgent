@@ -19,7 +19,8 @@ navigate_to, click, type_text, select_option, scroll_up, scroll_down, \
 extract_text, extract_links, get_page_state, page_to_markdown, \
 take_screenshot, get_datetime, open_new_tab, switch_tab, close_tab, list_tabs, \
 save_finding, recall_finding, search_memory, list_memories, delete_finding, close_browser, \
-search_bing, search_duckduckgo, search_brave.
+search_bing, search_duckduckgo, search_brave, \
+ask_human, fill_form_with_human, wait_for_human.
 
 Rules:
 - Write one instruction per step. Be specific and actionable.
@@ -29,6 +30,9 @@ Rules:
 - For multi-tab workflows, first instruct opening tabs, then use parallel_instructions.
 - Use save_finding to store important results that may be useful in future tasks.
 - Use recall_finding or search_memory to retrieve previously saved information.
+- Use ask_human when you need clarification, a decision, or info only the user can provide.
+- Use fill_form_with_human for login forms, registration, or any form needing user credentials.
+- Use wait_for_human when the user must act in the browser (CAPTCHA, 2FA). Only works in headed mode.
 - Reference previous conversation context when the user refers to earlier tasks.\
 """
 

@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from browser_agent.browser.session import BrowserSession
+    from browser_agent.config import Settings
+    from browser_agent.display import Display
     from browser_agent.memory import MemoryStore
 
 
@@ -14,6 +16,8 @@ if TYPE_CHECKING:
 class AgentDeps:
     browser: BrowserSession
     memory: MemoryStore
+    display: Display
+    settings: Settings
 
 
 class BrowserCloseRequested(Exception):

@@ -16,6 +16,7 @@ from browser_agent.tools.memory_tools import (
     save_finding,
     search_memory,
 )
+from browser_agent.tools.human import ask_human, fill_form_with_human, wait_for_human
 from browser_agent.tools.navigation import go_back, go_forward, navigate_to
 from browser_agent.tools.search import search_bing, search_brave, search_duckduckgo
 from browser_agent.tools.screenshot import take_screenshot
@@ -49,4 +50,7 @@ ALL_TOOLS = [
     search_bing,
     search_duckduckgo,
     search_brave,
+    ask_human,
+    fill_form_with_human,
+    wait_for_human,
 ]

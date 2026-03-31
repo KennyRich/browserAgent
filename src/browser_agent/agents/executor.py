@@ -15,7 +15,11 @@ Rules:
 - If an element is not found, report the failure clearly.
 - Do not guess or fabricate results.
 - Use save_finding to store important facts, data, or results that may be useful in future tasks.
-- Use recall_finding or search_memory to retrieve previously saved information.\
+- Use recall_finding or search_memory to retrieve previously saved information.
+- Use ask_human when you need user input, clarification, or a choice. Provide options when applicable.
+- Use fill_form_with_human for login/registration forms that need user credentials.
+- Use wait_for_human when the user must act in the browser (CAPTCHA, 2FA). Only works in headed mode.
+- NEVER include real passwords in your responses. Use "********" for any password values.\
 """
 
 

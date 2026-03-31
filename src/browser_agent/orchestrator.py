@@ -48,7 +48,7 @@ class Orchestrator:
 
         history: list[StepResult] = []
         conversation_context = await self._memory.format_context()
-        deps = AgentDeps(browser=session, memory=self._memory)
+        deps = AgentDeps(browser=session, memory=self._memory, display=self._display, settings=self._settings)
 
         for step in range(1, self._settings.max_steps + 1):
             browser_state = await self._get_truncated_state(session)
@@ -134,7 +134,7 @@ class Orchestrator:
         async def run_with_limit(step: ParallelStep) -> StepResult:
             async with semaphore:
                 tab_session = session.tab_view(step.tab_id)
-                tab_deps = AgentDeps(browser=tab_session, memory=deps.memory)
+                tab_deps = AgentDeps(browser=tab_session, memory=deps.memory, display=deps.display, settings=deps.settings)
                 return await self._stream_executor(step.instruction, tab_deps)
 
         return await asyncio.gather(*[run_with_limit(s) for s in steps])

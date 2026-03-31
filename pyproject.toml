@@ -15,6 +15,7 @@ dependencies = [
     "markdownify",
     "rich",
     "aiosqlite",
+    "InquirerPy",
 ]
 
 [project.scripts]
