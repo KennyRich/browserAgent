@@ -149,6 +149,7 @@ class BrowserSession:
                 "height": self._settings.viewport_height,
             },
         )
+        self._context.set_default_timeout(5000)
         page = await self._context.new_page()
         await _stealth.apply_stealth_async(page)
         self._tabs[0] = page

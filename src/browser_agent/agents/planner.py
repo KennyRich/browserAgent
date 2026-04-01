@@ -83,6 +83,17 @@ MEMORY
 - Instruct recall_finding or search_memory when the user refers to something from earlier
 - Use descriptive keys like "hn_top_stories" or "python_trending_repos"
 
+DATE AND TIME
+- For ANY question involving the current date, time, day of the week, or timezone: instruct the executor to "Call get_datetime to get the current date and time". Do NOT instruct it to navigate to a time website.
+- NEVER guess or assume the current date or time. You do not know it unless get_datetime tells you.
+- get_datetime is a tool, not a website. The instruction should be: "Call get_datetime"
+
+WHEN THE EXECUTOR IS STUCK
+- If the executor has failed the same action 2+ times, instruct it to "Call ask_human to ask the user for help"
+- If the executor reports a CAPTCHA or verification page, instruct it to "Call wait_for_human so the user can solve it in the browser"
+- If you are unsure what the user wants, instruct the executor to "Call ask_human to clarify with the user"
+- Do NOT keep sending the same failing instruction. Change approach or ask for human help.
+
 COMMON PITFALLS TO AVOID
 - Cookie consent popups: They block clicks on underlying elements. Instruct to dismiss them first.
 - Dynamic content: Some pages need scrolling to load more content.

@@ -16,7 +16,7 @@ async def click(ctx: RunContext[AgentDeps], description: str) -> str:
         ).or_(
             page.get_by_text(description, exact=False)
         )
-        await locator.first.click(timeout=5000)
+        await locator.first.click()
         return f"Clicked on '{description}'"
     except Exception as e:
         return f"Failed to click '{description}': {e}"
@@ -38,7 +38,7 @@ async def type_text(
         ).or_(
             page.get_by_label(selector_description)
         )
-        await locator.first.fill(text, timeout=5000)
+        await locator.first.fill(text)
         return f"Typed '{text}' into '{selector_description}'"
     except Exception as e:
         return f"Failed to type into '{selector_description}': {e}"
@@ -58,7 +58,7 @@ async def select_option(
         locator = page.get_by_role("combobox", name=selector_description).or_(
             page.get_by_label(selector_description)
         )
-        await locator.first.select_option(value, timeout=5000)
+        await locator.first.select_option(value)
         return f"Selected '{value}' in '{selector_description}'"
     except Exception as e:
         return f"Failed to select '{value}' in '{selector_description}': {e}"

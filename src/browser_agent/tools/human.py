@@ -109,14 +109,14 @@ async def fill_form_with_human(ctx: RunContext[AgentDeps]) -> str:
                 locator = page.get_by_label(label).or_(
                     page.locator(f'select[name="{name}"]') if name else page.get_by_label(label)
                 )
-                await locator.first.select_option(value, timeout=5000)
+                await locator.first.select_option(value, timeout=10000)
             else:
                 locator = page.get_by_label(label).or_(
                     page.get_by_placeholder(placeholder) if placeholder else page.get_by_label(label)
                 ).or_(
                     page.locator(f'input[name="{name}"]') if name else page.get_by_label(label)
                 )
-                await locator.first.fill(value, timeout=5000)
+                await locator.first.fill(value, timeout=10000)
 
             filled_labels.append(label)
         except Exception as e:
