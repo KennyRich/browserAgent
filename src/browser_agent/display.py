@@ -19,6 +19,7 @@ class Display:
         self._current_step_content: list[str] = []
         self._step_title = ""
         self._step_num = 0
+        self._queued_widget: StaticWidget | None = None
 
     def set_log(self, log) -> None:
         self._log = log
@@ -45,45 +46,16 @@ class Display:
 
     def begin_step(self, step_num: int, max_steps: int) -> None:
         if self._step_num > 0:
-            self._finalize_step()
+            asyncio.ensure_future(self.finalize_step_async())
         self._step_num = step_num
         self._step_title = f"Step {step_num}/{max_steps}"
         self._current_step_content = []
         if self._log:
             self._log.clear()
 
-    def _finalize_step(self) -> None:
-        if not self._app or not self._output_container or not self._log:
-            return
-
-
-
-        content_text = "\n".join(self._current_step_content).strip()
-        if not content_text:
-            content_text = "(no output)"
-
-        truncated = content_text[:500] + "..." if len(content_text) > 500 else content_text
-        collapsible = Collapsible(
-            StaticWidget(truncated, markup=False),
-            title=self._step_title,
-            collapsed=True,
-        )
-        self._app.call_from_thread(
-            self._output_container.mount, collapsible, before=self._log
-        ) if not asyncio.get_event_loop().is_running() else None
-
-        try:
-            self._output_container.mount(collapsible, before=self._log)
-        except Exception:
-            pass
-
-        self._current_step_content = []
-
     async def finalize_step_async(self) -> None:
         if not self._app or not self._output_container or not self._log:
             return
-
-
 
         content_text = "\n".join(self._current_step_content).strip()
         if not content_text:
@@ -264,6 +236,20 @@ class Display:
             self._write(Text("  [user] ********", style="bold yellow"))
         else:
             self._write(Text(f"  [user] {message}", style="bold yellow"))
+
+    async def show_queued(self, message: str) -> None:
+        if not self._app or not self._input:
+            return
+        await self.clear_queued()
+        label = f" Queued: {message}"
+        self._queued_widget = StaticWidget(Text(label, style="bold yellow"), id="queued-msg")
+        await self._app.mount(self._queued_widget, before=self._input)
+
+    async def clear_queued(self) -> None:
+        widget = self._queued_widget
+        self._queued_widget = None
+        if widget:
+            await widget.remove()
 
     def show_step(self, step_num: int, max_steps: int, reasoning: str, instruction: str) -> None:
         self.show_step_header(step_num, max_steps)
