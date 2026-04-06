@@ -8,7 +8,7 @@
 
 -
 
-## Model Behaviour Changes
+## Model Changes
 
 <!-- Describe any changes to model behaviour, prompts, or agent logic -->
 
