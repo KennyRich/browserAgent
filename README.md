@@ -165,6 +165,9 @@ All settings via `.env` file with `AGENT_` prefix:
 | `AGENT_MAX_TEXT_LENGTH` | `4000` | Page text truncation limit |
 | `AGENT_VIEWPORT_WIDTH` | `1280` | Browser viewport width |
 | `AGENT_VIEWPORT_HEIGHT` | `720` | Browser viewport height |
+| `AGENT_USE_HOSTED_MODEL` | `false` | Use a hosted Ollama instance |
+| `AGENT_HOSTED_OLLAMA_BASE_URL` | _(empty)_ | Hosted Ollama endpoint |
+| `AGENT_HOSTED_OLLAMA_API_KEY` | _(empty)_ | API key sent via `X-API-KEY` header |
 
 ## Project Structure
 

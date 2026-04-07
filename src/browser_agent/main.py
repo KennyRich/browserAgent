@@ -1,5 +1,6 @@
 import asyncio
 
+import httpx
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.ollama import OllamaProvider
 
@@ -13,14 +14,26 @@ from browser_agent.models import BrowserCloseRequested
 from browser_agent.orchestrator import Orchestrator
 
 
+def _build_model(settings: Settings) -> OpenAIChatModel:
+    if settings.use_hosted_model:
+        http_client = httpx.AsyncClient(
+            headers={"X-API-KEY": settings.hosted_ollama_api_key},
+        )
+        provider = OllamaProvider(
+            base_url=settings.hosted_ollama_base_url,
+            http_client=http_client,
+        )
+    else:
+        provider = OllamaProvider(base_url=settings.ollama_base_url)
+
+    return OpenAIChatModel(model_name=settings.model_name, provider=provider)
+
+
 async def run() -> None:
     settings = Settings()
     display = Display()
 
-    model = OpenAIChatModel(
-        model_name=settings.model_name,
-        provider=OllamaProvider(base_url=settings.ollama_base_url),
-    )
+    model = _build_model(settings)
 
     planner = create_planner(model, max_retries=settings.max_retries)
     executor = create_executor(model, max_retries=settings.max_retries)

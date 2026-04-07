@@ -6,6 +6,9 @@ class Settings(BaseSettings):
 
     model_name: str = "qwen3.5:35b-a3b-coding-nvfp4"
     ollama_base_url: str = "http://localhost:11434/v1"
+    use_hosted_model: bool = False
+    hosted_ollama_base_url: str = ""
+    hosted_ollama_api_key: str = ""
     headless: bool = False
     max_steps: int = 15
     max_retries: int = 3
