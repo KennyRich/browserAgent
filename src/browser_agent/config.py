@@ -18,3 +18,4 @@ class Settings(BaseSettings):
     memory_db_path: str = "memory.db"
     viewport_width: int = 1280
     viewport_height: int = 720
+    log_experiments: bool = False
