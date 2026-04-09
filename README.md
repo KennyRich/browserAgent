@@ -168,6 +168,7 @@ All settings via `.env` file with `AGENT_` prefix:
 | `AGENT_USE_HOSTED_MODEL` | `false` | Use a hosted Ollama instance |
 | `AGENT_HOSTED_OLLAMA_BASE_URL` | _(empty)_ | Hosted Ollama endpoint |
 | `AGENT_HOSTED_OLLAMA_API_KEY` | _(empty)_ | API key sent via `X-API-KEY` header |
+| `AGENT_LOG_EXPERIMENTS` | `false` | Log planner outputs to `experiment_logs/` |
 
 ## Project Structure
 
