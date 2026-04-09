@@ -1,4 +1,6 @@
 import asyncio
+from datetime import datetime, timezone
+from pathlib import Path
 
 from pydantic_ai import (
     Agent,
@@ -40,6 +42,50 @@ class Orchestrator:
         self._memory = memory
         self._model = model
 
+    def _init_run_log(self, task: str) -> Path | None:
+        if not self._settings.log_experiments:
+            return None
+        log_dir = Path("experiment_logs")
+        log_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        log_path = log_dir / f"{self._settings.model_name.replace(':', '_')}_{timestamp}.md"
+        log_path.write_text(
+            f"# Run Log\n\n"
+            f"- **Model:** `{self._settings.model_name}`\n"
+            f"- **Task:** {task}\n"
+            f"- **Time:** {datetime.now(timezone.utc).isoformat()}\n\n"
+            f"---\n\n"
+        )
+        return log_path
+
+    def _log_step(self, log_path: Path | None, step: int, action: PlannerAction, result: StepResult | list[StepResult] | None = None) -> None:
+        if log_path is None:
+            return
+        lines = [f"## Step {step}\n"]
+        lines.append(f"### Reasoning\n\n{action.reasoning}\n")
+
+        if action.is_complete:
+            lines.append(f"### Final Answer\n\n{action.final_answer}\n")
+        elif action.parallel_instructions:
+            lines.append("### Parallel Instructions\n")
+            for p in action.parallel_instructions:
+                lines.append(f"- **Tab {p.tab_id}:** {p.instruction}")
+            lines.append("")
+        else:
+            lines.append(f"### Instruction\n\n{action.instruction}\n")
+
+        if result is not None:
+            results = result if isinstance(result, list) else [result]
+            lines.append("### Result\n")
+            for r in results:
+                status = "Success" if r.success else "Failure"
+                lines.append(f"- **{status}:** {r.message}")
+            lines.append("")
+
+        lines.append("---\n\n")
+        with open(log_path, "a") as f:
+            f.write("\n".join(lines))
+
     async def run_task(self, task: str, session: BrowserSession) -> tuple[str, int]:
         if await self._memory.total_length() > self._settings.max_memory_length:
             if self._model:
@@ -49,6 +95,7 @@ class Orchestrator:
         history: list[StepResult] = []
         conversation_context = await self._memory.format_context()
         deps = AgentDeps(browser=session, memory=self._memory, display=self._display, settings=self._settings)
+        log_path = self._init_run_log(task)
 
         for step in range(1, self._settings.max_steps + 1):
             browser_state = await self._get_truncated_state(session)
@@ -60,6 +107,7 @@ class Orchestrator:
 
             if action.is_complete:
                 self._display.show_planner_result(action.reasoning, "Task complete")
+                self._log_step(log_path, step, action)
                 answer = action.final_answer or "Task completed."
                 await self._memory.add_conversation(task, answer, step)
                 return answer, step
@@ -70,11 +118,13 @@ class Orchestrator:
                 results = await self._execute_parallel(action.parallel_instructions, session, deps)
                 for result in results:
                     self._display.show_step_result(result.success, result.message)
+                self._log_step(log_path, step, action, results)
                 history.extend(results)
             else:
                 self._display.show_planner_result(action.reasoning, action.instruction)
                 result = await self._stream_executor(action.instruction, deps)
                 self._display.show_step_result(result.success, result.message)
+                self._log_step(log_path, step, action, result)
                 history.append(result)
 
         answer = "Max steps reached without completing the task."
