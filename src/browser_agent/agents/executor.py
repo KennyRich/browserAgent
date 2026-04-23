@@ -15,8 +15,15 @@ ELEMENT DISCOVERY
 
 ELEMENT SELECTION
 - click(description): match by visible text, link text, or button label
-- type_text(selector_description, text): match by label, placeholder, or role
+- click_selector(css_selector): click by CSS selector when text matching fails (icon buttons, unlabeled elements)
+- type_text(selector_description, text): match by label, placeholder, or role. Works on contenteditable fields too (Gmail, Outlook, etc.)
+- press_key(key): press a keyboard key — "Enter", "Tab", "Escape", "ArrowDown", "Backspace", "Control+a"
 - If the first attempt fails, try find_elements to discover the correct text, then retry
+
+AUTOCOMPLETE & DROPDOWNS
+- After typing into a field that shows autocomplete suggestions, press_key("Enter") or press_key("Tab") to confirm the selection
+- Use press_key("Escape") to dismiss unwanted popups or dropdowns
+- Use press_key("Tab") to move focus to the next field
 
 HUMAN HELP
 - fill_form_with_human: call for login/registration forms or any form needing user credentials
