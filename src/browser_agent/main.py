@@ -12,6 +12,7 @@ from browser_agent.display import Display
 from browser_agent.memory import MemoryStore
 from browser_agent.models import BrowserCloseRequested
 from browser_agent.orchestrator import Orchestrator
+from browser_agent.session_logger import SessionLogger
 
 
 def _build_model(settings: Settings) -> OpenAIChatModel:
@@ -41,10 +42,6 @@ async def run() -> None:
     memory = MemoryStore(settings.memory_db_path)
     await memory.initialize()
 
-    orchestrator = Orchestrator(
-        settings, planner, executor, display, memory, model=model
-    )
-
     display.show_welcome()
 
     session = None
@@ -67,6 +64,12 @@ async def run() -> None:
                 await session.__aenter__()
 
             display.show_task(task)
+
+            logger = SessionLogger(settings.logs_dir, memory._session_id)
+            orchestrator = Orchestrator(
+                settings, planner, executor, display, memory,
+                model=model, logger=logger,
+            )
 
             try:
                 answer, steps = await orchestrator.run_task(task, session)
