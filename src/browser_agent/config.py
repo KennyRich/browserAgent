@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     google_api_key: str = ""
     use_vision: bool = False
+    logs_dir: str = "logs"
     headless: bool = False
     max_steps: int = 15
     max_retries: int = 3
