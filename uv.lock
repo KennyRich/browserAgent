@@ -276,7 +276,7 @@ requires-dist = [
     { name = "markdownify" },
     { name = "playwright" },
     { name = "playwright-stealth" },
-    { name = "pydantic-ai", extras = ["openai"] },
+    { name = "pydantic-ai" },
     { name = "pydantic-settings" },
     { name = "rich" },
     { name = "textual" },

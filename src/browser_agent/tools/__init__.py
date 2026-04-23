@@ -4,6 +4,8 @@ from browser_agent.tools.datetime import get_datetime
 from browser_agent.tools.extraction import extract_links, extract_text, get_page_state
 from browser_agent.tools.interaction import (
     click,
+    click_selector,
+    press_key,
     scroll_down,
     scroll_up,
     select_option,
@@ -28,6 +30,8 @@ ALL_TOOLS = [
     go_back,
     go_forward,
     click,
+    click_selector,
+    press_key,
     type_text,
     select_option,
     scroll_down,
