@@ -65,7 +65,7 @@ class SessionLogger:
             f"**Task:** {task}",
             f"**Provider:** {provider} / {model}",
             f"**Vision:** {'ON' if vision else 'OFF'}",
-            f"**Result:** {total_steps} steps ({duration_s:.1f}s)",
+            f"**Result:** Completed in {total_steps} steps ({duration_s:.1f}s)",
             "",
         ]
 
