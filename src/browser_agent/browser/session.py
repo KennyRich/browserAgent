@@ -26,14 +26,18 @@ async def _build_state(page: Page) -> BrowserState:
                 document.querySelectorAll(
                     'a, button, input, select, textarea, [role="button"], [role="link"], [role="tab"]'
                 ).forEach(el => {
+                    if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return;
+                    if (el.getAttribute('aria-hidden') === 'true') return;
+                    const rect = el.getBoundingClientRect();
+                    if (!(rect.width > 0 && rect.height > 0)) return;
                     const tag = el.tagName.toLowerCase();
-                    const text = el.innerText?.trim() || el.getAttribute('aria-label') || el.getAttribute('placeholder') || '';
+                    const text = el.innerText?.trim() || el.getAttribute('aria-label') || el.getAttribute('placeholder') || el.getAttribute('title') || '';
                     const type = el.getAttribute('type') || '';
                     if (text || type) {
                         items.push(`[${tag}${type ? ':' + type : ''}] ${text}`.trim());
                     }
                 });
-                return items.slice(0, 50);
+                return items.slice(0, 75);
             }
         """)
     except Exception:
@@ -55,6 +59,7 @@ class BrowserSession:
         self._settings = settings
         self._playwright = None
         self._browser: Browser | None = None
+        self._is_cdp = bool(settings.chrome_cdp_url)
         self._context: BrowserContext | None = None
         self._tabs: dict[int, Page] = {}
         self._active_tab_id: int = 0
@@ -134,34 +139,50 @@ class BrowserSession:
 
     async def __aenter__(self) -> "BrowserSession":
         self._playwright = await async_playwright().start()
-        self._browser = await self._playwright.chromium.launch(
-            headless=self._settings.headless,
-            args=["--disable-blink-features=AutomationControlled"],
-            ignore_default_args=["--enable-automation"],
-        )
-        self._context = await self._browser.new_context(
-            user_agent=USER_AGENT,
-            locale="en-US",
-            timezone_id="America/New_York",
-            extra_http_headers={"Accept-Language": "en-US,en;q=0.9"},
-            viewport={
-                "width": self._settings.viewport_width,
-                "height": self._settings.viewport_height,
-            },
-        )
+        self._is_cdp = bool(self._settings.chrome_cdp_url)
+
+        if self._is_cdp:
+            self._browser = await self._playwright.chromium.connect_over_cdp(
+                self._settings.chrome_cdp_url
+            )
+            contexts = self._browser.contexts
+            self._context = contexts[0] if contexts else await self._browser.new_context()
+            pages = self._context.pages
+            page = pages[0] if pages else await self._context.new_page()
+        else:
+            self._browser = await self._playwright.chromium.launch(
+                headless=self._settings.headless,
+                args=["--disable-blink-features=AutomationControlled"],
+                ignore_default_args=["--enable-automation"],
+            )
+            self._context = await self._browser.new_context(
+                user_agent=USER_AGENT,
+                locale="en-US",
+                timezone_id="America/New_York",
+                extra_http_headers={"Accept-Language": "en-US,en;q=0.9"},
+                viewport={
+                    "width": self._settings.viewport_width,
+                    "height": self._settings.viewport_height,
+                },
+            )
+            page = await self._context.new_page()
+            await _stealth.apply_stealth_async(page)
+
         self._context.set_default_timeout(5000)
-        page = await self._context.new_page()
-        await _stealth.apply_stealth_async(page)
         self._tabs[0] = page
         self._active_tab_id = 0
         self._next_tab_id = 1
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        if self._context:
-            await self._context.close()
-        if self._browser:
-            await self._browser.close()
+        if self._is_cdp:
+            if self._browser:
+                self._browser.close()
+        else:
+            if self._context:
+                await self._context.close()
+            if self._browser:
+                await self._browser.close()
         if self._playwright:
             await self._playwright.stop()
 

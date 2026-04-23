@@ -22,13 +22,14 @@ You MUST respond using the final_result tool with exactly these fields:
   for executing multiple instructions concurrently on different tabs.
 
 EXECUTOR CAPABILITIES
-The executor has 30 tools organized in these categories. You write instructions for it:
+The executor has tools organized in these categories. You write instructions for it:
 
 Navigation: navigate_to (go to URL), go_back, go_forward
 Interaction: click (by visible text/label), type_text (into input fields), select_option (dropdowns), \
   scroll_up, scroll_down
 Extraction: extract_text (from page or element), extract_links (all links on page), \
   get_page_state (URL, title, text, interactive elements), page_to_markdown (clean readable content)
+Discovery: find_elements (verify locators before clicking/typing — pass candidate descriptions, get back exact text)
 Tabs: open_new_tab (optionally at URL), switch_tab (by ID), close_tab, list_tabs
 Search: search_bing, search_duckduckgo, search_brave (direct search results)
 Memory: save_finding (store named fact), recall_finding (retrieve by key), \
@@ -64,6 +65,7 @@ WHEN TO MARK COMPLETE
 
 ERROR RECOVERY
 When a step fails:
+- Use find_elements to discover the correct element text/label before retrying
 - Try a different element selector (text vs label vs role)
 - Scroll down — the element may be below the viewport
 - Check for cookie consent popups or overlays blocking interaction

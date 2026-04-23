@@ -1,4 +1,5 @@
 from browser_agent.tools.browser_control import close_browser
+from browser_agent.tools.dom_query import find_elements
 from browser_agent.tools.datetime import get_datetime
 from browser_agent.tools.extraction import extract_links, extract_text, get_page_state
 from browser_agent.tools.interaction import (
@@ -53,4 +54,5 @@ ALL_TOOLS = [
     ask_human,
     fill_form_with_human,
     wait_for_human,
+    find_elements,
 ]

@@ -3,7 +3,7 @@ import asyncio
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
-from textual.widgets import Collapsible, RadioButton, RadioSet, Static as StaticWidget
+from textual.widgets import Collapsible, LoadingIndicator, RadioButton, RadioSet, Static as StaticWidget
 
 
 class Display:
@@ -20,6 +20,7 @@ class Display:
         self._step_title = ""
         self._step_num = 0
         self._queued_widget: StaticWidget | None = None
+        self._loading: LoadingIndicator | None = None
 
     def set_log(self, log) -> None:
         self._log = log
@@ -35,6 +36,31 @@ class Display:
 
     def set_app(self, app) -> None:
         self._app = app
+
+    async def clear_output(self) -> None:
+        if not self._output_container or not self._log:
+            return
+        await self._hide_loading()
+        for child in list(self._output_container.children):
+            if child is not self._log:
+                await child.remove()
+        self._log.clear()
+        self._step_num = 0
+        self._step_title = ""
+        self._current_step_content = []
+
+    async def _show_loading(self) -> None:
+        if not self._output_container or not self._log:
+            return
+        await self._hide_loading()
+        self._loading = LoadingIndicator(id="loading")
+        await self._output_container.mount(self._loading, before=self._log)
+
+    async def _hide_loading(self) -> None:
+        loading = self._loading
+        self._loading = None
+        if loading:
+            await loading.remove()
 
     def _write(self, content, **kwargs) -> None:
         if self._log:
@@ -56,6 +82,7 @@ class Display:
     async def finalize_step_async(self) -> None:
         if not self._app or not self._output_container or not self._log:
             return
+        await self._hide_loading()
 
         content_text = "\n".join(self._current_step_content).strip()
         if not content_text:
@@ -170,15 +197,17 @@ class Display:
         self.begin_step(step_num, max_steps)
         self._write(Text(f"  Step {step_num}/{max_steps}", style="bold cyan"))
 
-    def show_planning_status(self) -> None:
+    async def show_planning_status(self) -> None:
         self.set_status_text("Planning...", "dim cyan")
         self._write(Text("  Planning...", style="dim"))
+        await self._show_loading()
 
     def show_summarizing_status(self) -> None:
         self.set_status_text("Summarizing memory...", "dim")
         self._write(Text("  Summarizing memory...", style="dim"))
 
-    def show_planner_result(self, reasoning: str, instruction: str) -> None:
+    async def show_planner_result(self, reasoning: str, instruction: str) -> None:
+        await self._hide_loading()
         self._step_title = f"Step {self._step_num} - {instruction[:60]}"
         self._write(Text(f"  Thinking: {reasoning}", style="dim green"))
         self._write(Text(f"  Action:   {instruction}", style="dim green"))
@@ -251,9 +280,9 @@ class Display:
         if widget:
             await widget.remove()
 
-    def show_step(self, step_num: int, max_steps: int, reasoning: str, instruction: str) -> None:
+    async def show_step(self, step_num: int, max_steps: int, reasoning: str, instruction: str) -> None:
         self.show_step_header(step_num, max_steps)
-        self.show_planner_result(reasoning, instruction)
+        await self.show_planner_result(reasoning, instruction)
 
     def show_parallel_step(self, step_num: int, max_steps: int, reasoning: str, instructions: list) -> None:
         self.begin_step(step_num, max_steps)

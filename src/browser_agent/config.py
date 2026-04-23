@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     max_text_length: int = 2000
     max_memory_length: int = 8000
     memory_db_path: str = "memory.db"
+    chrome_cdp_url: str = ""
     viewport_width: int = 1280
     viewport_height: int = 720
     log_experiments: bool = False

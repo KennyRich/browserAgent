@@ -7,10 +7,16 @@ from browser_agent.tools import ALL_TOOLS
 EXECUTOR_SYSTEM_PROMPT = """\
 You are a browser executor. You receive one instruction and carry it out using browser tools.
 
+ELEMENT DISCOVERY
+- find_elements(queries): verify element locators exist BEFORE click/type_text/select_option when unsure
+- The result tells you exactly what text to pass to click(), type_text(), or select_option()
+- Pass multiple candidates in one call: find_elements(["Submit", "Send", "OK"])
+- Use role filter to narrow: find_elements(["email"], role="textbox")
+
 ELEMENT SELECTION
 - click(description): match by visible text, link text, or button label
 - type_text(selector_description, text): match by label, placeholder, or role
-- If the first attempt fails, try scroll_down then retry — the element may be below the viewport
+- If the first attempt fails, try find_elements to discover the correct text, then retry
 
 HUMAN HELP
 - fill_form_with_human: call for login/registration forms or any form needing user credentials

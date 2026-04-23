@@ -196,9 +196,6 @@ browserAgent/
 │       │   └── datetime.py         # get_datetime
 │       └── browser/
 │           └── session.py          # BrowserSession + TabSession
-└── docs/
-    └── superpowers/specs/
-        └── 2026-03-31-browser-agent-design.md
 ```
 
 ## Example Tasks
