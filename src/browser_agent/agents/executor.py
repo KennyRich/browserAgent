@@ -25,6 +25,13 @@ AUTOCOMPLETE & DROPDOWNS
 - Use press_key("Escape") to dismiss unwanted popups or dropdowns
 - Use press_key("Tab") to move focus to the next field
 
+SMART ELEMENT FINDING (when enabled)
+- smart_find(intent): find elements by natural language intent, returns ranked matches with scores
+- smart_click(intent): find + click by intent (e.g., "the login button", "checkout link")
+- smart_fill(intent, text): find + type by intent (e.g., "the email field", "search box")
+- Use smart tools when basic click/type_text fail or when element text is ambiguous
+- Basic tools (click, type_text) still work and are faster for exact-match cases
+
 HUMAN HELP
 - fill_form_with_human: call for login/registration forms or any form needing user credentials
 - ask_human: call when you need clarification or the user must choose between options

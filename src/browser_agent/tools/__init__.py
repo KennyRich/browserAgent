@@ -24,6 +24,7 @@ from browser_agent.tools.navigation import go_back, go_forward, navigate_to
 from browser_agent.tools.search import search_bing, search_brave, search_duckduckgo
 from browser_agent.tools.screenshot import take_screenshot
 from browser_agent.tools.tabs import close_tab, list_tabs, open_new_tab, switch_tab
+from browser_agent.tools.smart_tools import smart_click, smart_fill, smart_find
 
 ALL_TOOLS = [
     navigate_to,
@@ -58,5 +59,8 @@ ALL_TOOLS = [
     ask_human,
     fill_form_with_human,
     wait_for_human,
+    smart_find,
+    smart_click,
+    smart_fill,
     find_elements,
 ]
