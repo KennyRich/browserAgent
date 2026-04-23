@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     google_api_key: str = ""
     use_vision: bool = False
     logs_dir: str = "logs"
+    use_smart_locator: bool = False
     headless: bool = False
     max_steps: int = 15
     max_retries: int = 3

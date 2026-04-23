@@ -19,6 +19,9 @@ dependencies = [
     "textual",
 ]
 
+[project.optional-dependencies]
+smart = ["sentence-transformers", "rapidfuzz"]
+
 [project.scripts]
 browser-agent = "browser_agent.main:main"
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel
 
@@ -21,6 +21,7 @@ class AgentDeps:
     display: Display
     settings: Settings
     input_queue: asyncio.Queue[str] | None = None
+    page_index: Any = None
 
 
 class BrowserCloseRequested(Exception):
