@@ -64,10 +64,10 @@ RULES
 """
 
 
-def create_executor(model: Model, max_retries: int = 3) -> Agent[AgentDeps, str]:
+def create_executor(model: Model, max_retries: int = 3, tools: list | None = None) -> Agent[AgentDeps, str]:
     return Agent(
         model,
-        tools=ALL_TOOLS,
+        tools=tools if tools is not None else ALL_TOOLS,
         deps_type=AgentDeps,
         system_prompt=EXECUTOR_SYSTEM_PROMPT,
         retries=max_retries,

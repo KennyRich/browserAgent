@@ -26,6 +26,8 @@ from browser_agent.tools.screenshot import take_screenshot
 from browser_agent.tools.tabs import close_tab, list_tabs, open_new_tab, switch_tab
 from browser_agent.tools.smart_tools import smart_click, smart_fill, smart_find
 
+BASIC_LOCATOR_TOOLS = {click, click_selector, type_text, find_elements}
+
 ALL_TOOLS = [
     navigate_to,
     go_back,
