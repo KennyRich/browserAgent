@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "pydantic-ai[openai]",
+    "pydantic-ai",
     "pydantic-settings",
     "playwright",
     "playwright-stealth",
@@ -16,7 +16,13 @@ dependencies = [
     "rich",
     "aiosqlite",
     "InquirerPy",
+    "textual",
+    "numpy>=2.4.4",
+    "rapidfuzz>=3.14.5",
 ]
+
+[project.optional-dependencies]
+smart = ["sentence-transformers", "rapidfuzz"]
 
 [project.scripts]
 browser-agent = "browser_agent.main:main"

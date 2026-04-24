@@ -99,7 +99,7 @@ class MemoryStore:
             parts.append(f"Summary of earlier conversation:\n{latest_summary}")
 
         for i, entry in enumerate(entries_after, 1):
-            parts.append(f"  [{i}] Task: \"{entry['task']}\" -> Answer: \"{entry['answer'][:200]}\"")
+            parts.append(f"  [{i}] Task: \"{entry['task']}\" -> Answer: \"{entry['answer']}\"")
 
         return "\n".join(parts) if parts else ""
 

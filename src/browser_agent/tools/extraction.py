@@ -15,9 +15,9 @@ async def extract_text(
     try:
         if selector_description:
             locator = page.get_by_text(selector_description, exact=False)
-            text = await locator.first.inner_text(timeout=5000)
+            text = await locator.first.inner_text()
         else:
-            text = await page.inner_text("body", timeout=5000)
+            text = await page.inner_text("body")
         return text.strip()
     except Exception as e:
         return f"Failed to extract text: {e}"

@@ -1,8 +1,11 @@
 from browser_agent.tools.browser_control import close_browser
+from browser_agent.tools.dom_query import find_elements
 from browser_agent.tools.datetime import get_datetime
 from browser_agent.tools.extraction import extract_links, extract_text, get_page_state
 from browser_agent.tools.interaction import (
     click,
+    click_selector,
+    press_key,
     scroll_down,
     scroll_up,
     select_option,
@@ -21,12 +24,17 @@ from browser_agent.tools.navigation import go_back, go_forward, navigate_to
 from browser_agent.tools.search import search_bing, search_brave, search_duckduckgo
 from browser_agent.tools.screenshot import take_screenshot
 from browser_agent.tools.tabs import close_tab, list_tabs, open_new_tab, switch_tab
+from browser_agent.tools.smart_tools import smart_click, smart_fill, smart_find
+
+BASIC_LOCATOR_TOOLS = {click, click_selector, type_text, find_elements}
 
 ALL_TOOLS = [
     navigate_to,
     go_back,
     go_forward,
     click,
+    click_selector,
+    press_key,
     type_text,
     select_option,
     scroll_down,
@@ -53,4 +61,8 @@ ALL_TOOLS = [
     ask_human,
     fill_form_with_human,
     wait_for_human,
+    smart_find,
+    smart_click,
+    smart_fill,
+    find_elements,
 ]

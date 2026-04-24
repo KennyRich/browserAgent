@@ -16,7 +16,7 @@ async def click(ctx: RunContext[AgentDeps], description: str) -> str:
         ).or_(
             page.get_by_text(description, exact=False)
         )
-        await locator.first.click(timeout=5000)
+        await locator.first.click()
         return f"Clicked on '{description}'"
     except Exception as e:
         return f"Failed to click '{description}': {e}"
@@ -26,6 +26,10 @@ async def type_text(
     ctx: RunContext[AgentDeps], selector_description: str, text: str
 ) -> str:
     """Type text into an input field matching the given description.
+
+    Works with standard inputs, textareas, AND contenteditable elements
+    (like Gmail compose fields). Tries fill() first, falls back to
+    click-then-keyboard-type for contenteditable divs.
 
     Args:
         selector_description: Visible label, placeholder, or ARIA role of the input.
@@ -38,10 +42,49 @@ async def type_text(
         ).or_(
             page.get_by_label(selector_description)
         )
-        await locator.first.fill(text, timeout=5000)
+        element = locator.first
+        try:
+            await element.fill(text)
+        except Exception:
+            await element.click()
+            await page.keyboard.press("Control+a")
+            await page.keyboard.type(text, delay=20)
         return f"Typed '{text}' into '{selector_description}'"
     except Exception as e:
         return f"Failed to type into '{selector_description}': {e}"
+
+
+async def press_key(ctx: RunContext[AgentDeps], key: str) -> str:
+    """Press a keyboard key. Use to confirm autocomplete selections, dismiss
+    popups, submit forms, or navigate between fields.
+
+    Args:
+        key: Key to press. Examples: "Enter", "Tab", "Escape", "Backspace",
+             "ArrowDown", "ArrowUp", "Control+a", "Shift+Tab".
+    """
+    page = ctx.deps.browser.page
+    try:
+        await page.keyboard.press(key)
+        return f"Pressed '{key}'"
+    except Exception as e:
+        return f"Failed to press '{key}': {e}"
+
+
+async def click_selector(ctx: RunContext[AgentDeps], css_selector: str) -> str:
+    """Click an element using a CSS selector. Use when click() can't find
+    the element by text — for example, icon buttons, unlabeled elements, or
+    elements found via find_elements with mode="css".
+
+    Args:
+        css_selector: A CSS selector targeting the element (e.g. "[aria-label='Send']",
+                      "button.compose", "#send-button").
+    """
+    page = ctx.deps.browser.page
+    try:
+        await page.locator(css_selector).first.click()
+        return f"Clicked element matching '{css_selector}'"
+    except Exception as e:
+        return f"Failed to click '{css_selector}': {e}"
 
 
 async def select_option(
@@ -58,7 +101,7 @@ async def select_option(
         locator = page.get_by_role("combobox", name=selector_description).or_(
             page.get_by_label(selector_description)
         )
-        await locator.first.select_option(value, timeout=5000)
+        await locator.first.select_option(value)
         return f"Selected '{value}' in '{selector_description}'"
     except Exception as e:
         return f"Failed to select '{value}' in '{selector_description}': {e}"

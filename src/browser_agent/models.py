@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
+    import asyncio
+
     from browser_agent.browser.session import BrowserSession
     from browser_agent.config import Settings
     from browser_agent.display import Display
@@ -18,6 +20,8 @@ class AgentDeps:
     memory: MemoryStore
     display: Display
     settings: Settings
+    input_queue: asyncio.Queue[str] | None = None
+    page_index: Any = None
 
 
 class BrowserCloseRequested(Exception):
