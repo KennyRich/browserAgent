@@ -555,16 +555,14 @@ class BrowserAgentApp(App):
 
 
 def main() -> None:
-    settings = Settings()
-    if settings.use_smart_locator:
-        import os
-        os.environ["TOKENIZERS_PARALLELISM"] = "false"
-        os.environ["OMP_NUM_THREADS"] = "1"
-        try:
-            from browser_agent.tools.smart_tools import _get_embedding_model
-            _get_embedding_model()
-        except Exception as e:
-            print(f"Warning: Smart locator model failed to load: {e}")
+    import os
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    os.environ["OMP_NUM_THREADS"] = "1"
+    try:
+        from browser_agent.tools.smart_tools import _get_embedding_model
+        _get_embedding_model()
+    except Exception:
+        pass  # sentence-transformers not installed — smart tools will show clear error if used
     BrowserAgentApp().run()
 
 
