@@ -1,4 +1,5 @@
 from pydantic_ai import Agent
+from pydantic_ai.settings import ModelSettings
 from pydantic_ai.models import Model
 
 from browser_agent.models import BrowserState, PlannerAction, StepResult
@@ -111,6 +112,7 @@ def create_planner(model: Model, max_retries: int = 3) -> Agent[None, PlannerAct
         output_type=PlannerAction,
         system_prompt=PLANNER_SYSTEM_PROMPT,
         retries=max_retries,
+        model_settings=ModelSettings(temperature=0.5),
     )
 
 

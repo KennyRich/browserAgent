@@ -1,4 +1,5 @@
 from pydantic_ai import Agent
+from pydantic_ai.settings import ModelSettings
 from pydantic_ai.models import Model
 
 from browser_agent.models import AgentDeps
@@ -71,4 +72,5 @@ def create_executor(model: Model, max_retries: int = 3, tools: list | None = Non
         deps_type=AgentDeps,
         system_prompt=EXECUTOR_SYSTEM_PROMPT,
         retries=max_retries,
+        model_settings=ModelSettings(temperature=0.5)
     )
